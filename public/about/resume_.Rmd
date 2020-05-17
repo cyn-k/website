@@ -1,0 +1,88 @@
+---
+title: "resume"
+output: html_document
+categories:
+  - about
+date: '2020-05-15'
+showpagemeta: false
+tags:
+  - about
+---
+
+
+## Contact
+Email: Cynthia.kulak@gmail.com • Mobile: (979) 533-6001
+
+## EDUCATION
+
+### The University of Texas at Austin
+
+- Bachelor of Science and Arts, Biology	May 2020
+- Health Communication Minor
+- Overall GPA: 3.3
+
+## RELEVANT EXPERIENCE
+
+### Austin Nature and Science Center 
+Docent Volunteer; Austin, TX (October 2019 – Current)
+
+- Created various activities and signs to educate the 100+ guests that visit each day on habitats, behaviors, diet, and conservation 
+- Collected data on the animals by making ethograms to report to the keepers
+- Organized bones, skulls, pelts, feathers, and other animal products to use for display and education 
+
+### Little Cause-Players 
+President; Austin, TX (May 2019 – Current)
+
+- Coordinated volunteering opportunities at children’s hospitals on a monthly basis 
+- Partnered with other non-profits to enhance the experience children face in a medical setting
+- Performed as popular fictional characters to spread joy to children and their families 
+
+### College of Natural Sciences - Cambronne Lab 
+Research Assistant; Austin, TX (March 2019 – Current)
+
+-	Researched the relationship between the Legionnaires’ disease bacterium and environmental host protozoa, and how this interaction influences disease manifestation in humans
+-	Presented detailed information of findings to other lab members during weekly meetings 
+-	Used critical thinking and independent decision making to determine experimental methods
+
+### The Walt Disney Company – Disney College Program
+Housekeeping; Orlando, FL (July 2016 – January 2017)
+
+-	Performed excellent communication skills by interacting with guests and other cast members from around the world
+-	Created and maintained positive visual enhancements while providing exceptional guest service 
+-	Employed time-management skills to guarantee responsibilities were accomplished before guests returned to rooms 
+
+## ADDITIONAL EXPERIENCE
+
+### McCombs School of Business 
+Front Desk Receptionist; Austin, TX	(January 2020 – May 2020)
+
+-	Communicated with employers from 40 different companies recruiting for the Masters students to ensure each interview ran smoothly
+-	Compiled employer contact information for staff and students for follow-up questions or thank you letters
+-	Ensured all rooms remained presentable between interviews by being detail-oriented 
+
+### Office of Undergraduate Studies 
+Transfer Interest Group Mentor; Austin, TX (August 2018 – December 2019)
+
+-	Directed weekly seminars to inform and assist new transfer students
+-	Incorporated leadership and interpersonal skills to make students feel welcomed and supported
+-	Utilized resources to facilitate relationships between students, advisors, and faculty
+
+### Texas Transfer Students 
+President; Austin, TX (May 2018 – May 2019)
+
+-	Guided and informed new students on campus to foster relationships and assist in their academic pursuits
+-	Awarded Best Academic Organization and Most Improved Organization by the Dean of Students’ Swing Out Awards 
+-	Lead Executive Meetings and General Assembly Meetings for over 75 members   
+
+### McCombs School of Business 
+Student Worker in MBA Program Office; Austin, TX (August 2017 – December 2018)
+
+-	Maintained and updated confidential student data forms
+-	Applied exceptional interpersonal skills to assist colleagues and students 
+-	Managed University-wide correspondence 
+
+## Additional 
+
+- Skills: MS Word, Excel, PowerPoint, RStudio, Python
+- Interests: Fishkeeping, Baking, Theater, Calligraphy  
+

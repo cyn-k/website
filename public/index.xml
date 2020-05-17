@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SDS 348 Portfolio</title>
+    <link>/</link>
+    <description>Recent content on SDS 348 Portfolio</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Sun, 02 Oct 2016 22:55:05 -0400</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>about me</title>
+      <link>/about/about/</link>
+      <pubDate>Fri, 15 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/about/about/</guid>
+      <description>These are a few of my favorite things:)Animals!I love animals! Here are a few of my pets!
+This is the greatest picture I have taken of my cat, SpaghettiMy precious gorl, TaliaThe happiest lil pup, LucyAs my mom likes to call them, our hippy chickens (and ducks that think they’re chickens)And the bull I raised as a child in our backyard, who I brilliantly named RedDisneyI am a h u g e Disney fan!</description>
+    </item>
+    
+    <item>
+      <title>Python</title>
+      <link>/2020/05/15/python/</link>
+      <pubDate>Fri, 15 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/05/15/python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Python &amp; Greg Fenves</title>
+      <link>/2020/05/15/python-101/</link>
+      <pubDate>Fri, 15 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/05/15/python-101/</guid>
+      <description>library(reticulate)## Warning: package &amp;#39;reticulate&amp;#39; was built under R version 3.6.3pres_dict = {&amp;#39;firstName&amp;#39;: &amp;#39;Greg&amp;#39;,&amp;#39;lastName&amp;#39;: &amp;#39;Fenves&amp;#39;,&amp;#39;hobbies&amp;#39;: [&amp;#39;traveling&amp;#39;,&amp;#39;reading Murakami&amp;#39;,&amp;#39;art&amp;#39;],&amp;#39;occupation&amp;#39;: [&amp;#39;engineer&amp;#39;, &amp;#39;college president&amp;#39;],&amp;#39;age&amp;#39;: 62}print(pres_dict)## {&amp;#39;firstName&amp;#39;: &amp;#39;Greg&amp;#39;, &amp;#39;lastName&amp;#39;: &amp;#39;Fenves&amp;#39;, &amp;#39;hobbies&amp;#39;: [&amp;#39;traveling&amp;#39;, &amp;#39;reading Murakami&amp;#39;, &amp;#39;art&amp;#39;], &amp;#39;occupation&amp;#39;: [&amp;#39;engineer&amp;#39;, &amp;#39;college president&amp;#39;], &amp;#39;age&amp;#39;: 62}print(pres_dict.keys())## dict_keys([&amp;#39;firstName&amp;#39;, &amp;#39;lastName&amp;#39;, &amp;#39;hobbies&amp;#39;, &amp;#39;occupation&amp;#39;, &amp;#39;age&amp;#39;])print(pres_dict.values()) #values can be anything, not just numbers## dict_values([&amp;#39;Greg&amp;#39;, &amp;#39;Fenves&amp;#39;, [&amp;#39;traveling&amp;#39;, &amp;#39;reading Murakami&amp;#39;, &amp;#39;art&amp;#39;], [&amp;#39;engineer&amp;#39;, &amp;#39;college president&amp;#39;], 62])pres_dict[&amp;#39;hobbies&amp;#39;].</description>
+    </item>
+    
+    <item>
+      <title>resume</title>
+      <link>/about/resume_/</link>
+      <pubDate>Fri, 15 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/about/resume_/</guid>
+      <description>ContactEmail: Cynthia.kulak@gmail.com • Mobile: (979) 533-6001
+EDUCATIONThe University of Texas at AustinBachelor of Science and Arts, Biology May 2020Health Communication MinorOverall GPA: 3.3RELEVANT EXPERIENCEAustin Nature and Science CenterDocent Volunteer; Austin, TX (October 2019 – Current)
+Created various activities and signs to educate the 100+ guests that visit each day on habitats, behaviors, diet, and conservationCollected data on the animals by making ethograms to report to the keepersOrganized bones, skulls, pelts, feathers, and other animal products to use for display and educationLittle Cause-PlayersPresident; Austin, TX (May 2019 – Current)</description>
+    </item>
+    
+    <item>
+      <title>Projects</title>
+      <link>/projects/</link>
+      <pubDate>Sun, 02 Oct 2016 22:55:05 -0400</pubDate>
+      
+      <guid>/projects/</guid>
+      <description>Projects Here are some projects I have recently completed:
+  Exploratory Data Analysis with Tidyverse Tools
+  Modeling, Testing, and Classification
+  </description>
+    </item>
+    
+    <item>
+      <title>Project 1</title>
+      <link>/project1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project1/</guid>
+      <description>#Data setsBodyMass&amp;lt;-read.csv(&amp;quot;BodyMass.csv&amp;quot;)Habitat&amp;lt;-read.csv(&amp;quot;Habitat.csv&amp;quot;)Introduction: The datasets I have chosen show the body mass and habitats of the world’s primates from a review of 1,216 published studies from 1941-2018. I have always been interested in primates and I am considering becoming a primatologist, so I thought this information would be interesting. Both datasets come from zenodo.org, which I found from the shared google sheet of datasets. Both datasets share the variables Family, Genus, CommonName, Species, and Species (ITIS), and the references used for the data.</description>
+    </item>
+    
+    <item>
+      <title>Project 2</title>
+      <link>/project2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project2/</guid>
+      <description>Librarieslibrary(dplyr)## ## Attaching package: &amp;#39;dplyr&amp;#39;## The following objects are masked from &amp;#39;package:stats&amp;#39;:## ## filter, lag## The following objects are masked from &amp;#39;package:base&amp;#39;:## ## intersect, setdiff, setequal, unionlibrary(tidyverse)## -- Attaching packages ---------------------------------- tidyverse 1.3.0 --## v ggplot2 3.2.1 v purrr 0.3.3## v tibble 2.1.3 v stringr 1.4.0## v tidyr 1.0.2 v forcats 0.4.0## v readr 1.3.1## -- Conflicts ------------------------------------- tidyverse_conflicts() --## x dplyr::filter() masks stats::filter()## x dplyr::lag() masks stats::lag()library(ggplot2)library(sandwich)## Warning: package &amp;#39;sandwich&amp;#39; was built under R version 3.</description>
+    </item>
+    
+  </channel>
+</rss>

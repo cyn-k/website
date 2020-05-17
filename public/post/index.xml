@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on SDS 348 Portfolio</title>
+    <link>/post/</link>
+    <description>Recent content in Posts on SDS 348 Portfolio</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Fri, 15 May 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Python</title>
+      <link>/2020/05/15/python/</link>
+      <pubDate>Fri, 15 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/05/15/python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Python &amp; Greg Fenves</title>
+      <link>/2020/05/15/python-101/</link>
+      <pubDate>Fri, 15 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/05/15/python-101/</guid>
+      <description>library(reticulate)## Warning: package &amp;#39;reticulate&amp;#39; was built under R version 3.6.3pres_dict = {&amp;#39;firstName&amp;#39;: &amp;#39;Greg&amp;#39;,&amp;#39;lastName&amp;#39;: &amp;#39;Fenves&amp;#39;,&amp;#39;hobbies&amp;#39;: [&amp;#39;traveling&amp;#39;,&amp;#39;reading Murakami&amp;#39;,&amp;#39;art&amp;#39;],&amp;#39;occupation&amp;#39;: [&amp;#39;engineer&amp;#39;, &amp;#39;college president&amp;#39;],&amp;#39;age&amp;#39;: 62}print(pres_dict)## {&amp;#39;firstName&amp;#39;: &amp;#39;Greg&amp;#39;, &amp;#39;lastName&amp;#39;: &amp;#39;Fenves&amp;#39;, &amp;#39;hobbies&amp;#39;: [&amp;#39;traveling&amp;#39;, &amp;#39;reading Murakami&amp;#39;, &amp;#39;art&amp;#39;], &amp;#39;occupation&amp;#39;: [&amp;#39;engineer&amp;#39;, &amp;#39;college president&amp;#39;], &amp;#39;age&amp;#39;: 62}print(pres_dict.keys())## dict_keys([&amp;#39;firstName&amp;#39;, &amp;#39;lastName&amp;#39;, &amp;#39;hobbies&amp;#39;, &amp;#39;occupation&amp;#39;, &amp;#39;age&amp;#39;])print(pres_dict.values()) #values can be anything, not just numbers## dict_values([&amp;#39;Greg&amp;#39;, &amp;#39;Fenves&amp;#39;, [&amp;#39;traveling&amp;#39;, &amp;#39;reading Murakami&amp;#39;, &amp;#39;art&amp;#39;], [&amp;#39;engineer&amp;#39;, &amp;#39;college president&amp;#39;], 62])pres_dict[&amp;#39;hobbies&amp;#39;].</description>
+    </item>
+    
+  </channel>
+</rss>

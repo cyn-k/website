@@ -1,0 +1,511 @@
+---
+title: "Project 1"
+author: "Cynthia Kulak cek2338"
+date: "3/15/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+<pre class="r"><code>#Data sets
+BodyMass&lt;-read.csv(&quot;BodyMass.csv&quot;)
+Habitat&lt;-read.csv(&quot;Habitat.csv&quot;)</code></pre>
+<p><em>Introduction: The datasets I have chosen show the body mass and habitats of the world’s primates from a review of 1,216 published studies from 1941-2018. I have always been interested in primates and I am considering becoming a primatologist, so I thought this information would be interesting. Both datasets come from zenodo.org, which I found from the shared google sheet of datasets. Both datasets share the variables Family, Genus, CommonName, Species, and Species (ITIS), and the references used for the data. Additional variables in the Body Mass dataset are the average body mass, the average body mass of males and females (all in kilograms). Additional variables in the Habitat dataset are forest, savanna, shrubland, grassland, wetlands, rocky areas, and desert. Once these datasets are combined and analyzed, I think there will be associations between each habitat and the average body mass.</em></p>
+<pre class="r"><code>#Tidying
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages ---------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v ggplot2 3.2.1     v purrr   0.3.3
+## v tibble  2.1.3     v stringr 1.4.0
+## v tidyr   1.0.2     v forcats 0.4.0
+## v readr   1.3.1</code></pre>
+<pre><code>## -- Conflicts ------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>habitat_tidy&lt;-Habitat%&gt;%pivot_longer(c(6:12), names_to=&quot;habitat&quot;, values_to = &quot;value&quot;)%&gt;%
+  mutate(habitat = recode(habitat, &quot;Habitat_Forest&quot;=&quot;forest&quot;,
+                          &quot;Habitat_Savanna&quot;=&quot;savanna&quot;,
+                          &quot;Habitat_Shrubland&quot;=&quot;shrubland&quot;,
+                          &quot;Habitat_Grassland&quot;=&quot;grassland&quot;,
+                          &quot;Habitat_Wetlands&quot;=&quot;wetlands&quot;,
+                          &quot;Habitat_Rocky.areas&quot;=&quot;rocky.areas&quot;,
+                          &quot;Habitat_Desert&quot;=&quot;desert&quot;))%&gt;%
+  filter(value==&quot;1&quot;)%&gt;%select(-value)
+glimpse(habitat_tidy)</code></pre>
+<pre><code>## Observations: 629
+## Variables: 8
+## $ Family         &lt;fct&gt; Cercopithecidae, Cercopithecidae, Cheirogaleidae, Ce...
+## $ Genus          &lt;fct&gt; Allenopithecus, Allenopithecus, Allocebus, Allochroc...
+## $ CommonName     &lt;fct&gt; Allen_s_Swamp_Monkey, Allen_s_Swamp_Monkey, Hairy_ea...
+## $ Species        &lt;fct&gt; Allenopithecus_nigroviridis, Allenopithecus_nigrovir...
+## $ Species..ITIS. &lt;fct&gt; Allenopithecus_nigroviridis, Allenopithecus_nigrovir...
+## $ Refs1          &lt;int&gt; 227, 227, 227, 145, 145, 145, 376, 379, 227, 227, 22...
+## $ Refs2          &lt;int&gt; NA, NA, NA, 245, 245, 245, NA, NA, NA, NA, NA, NA, N...
+## $ habitat        &lt;chr&gt; &quot;forest&quot;, &quot;wetlands&quot;, &quot;forest&quot;, &quot;forest&quot;, &quot;shrubland...</code></pre>
+<pre class="r"><code>habitat_tidy_1&lt;-Habitat%&gt;%pivot_longer(c(6:12), names_to=&quot;habitat&quot;, values_to = &quot;value&quot;)%&gt;%
+  mutate(habitat = recode(habitat, &quot;Habitat_Forest&quot;=&quot;forest&quot;,
+                          &quot;Habitat_Savanna&quot;=&quot;savanna&quot;,
+                          &quot;Habitat_Shrubland&quot;=&quot;shrubland&quot;,
+                          &quot;Habitat_Grassland&quot;=&quot;grassland&quot;,
+                          &quot;Habitat_Wetlands&quot;=&quot;wetlands&quot;,
+                          &quot;Habitat_Rocky.areas&quot;=&quot;rocky.areas&quot;,
+                          &quot;Habitat_Desert&quot;=&quot;desert&quot;))
+glimpse(habitat_tidy_1)</code></pre>
+<pre><code>## Observations: 3,682
+## Variables: 9
+## $ Family         &lt;fct&gt; Cercopithecidae, Cercopithecidae, Cercopithecidae, C...
+## $ Genus          &lt;fct&gt; Allenopithecus, Allenopithecus, Allenopithecus, Alle...
+## $ CommonName     &lt;fct&gt; Allen_s_Swamp_Monkey, Allen_s_Swamp_Monkey, Allen_s_...
+## $ Species        &lt;fct&gt; Allenopithecus_nigroviridis, Allenopithecus_nigrovir...
+## $ Species..ITIS. &lt;fct&gt; Allenopithecus_nigroviridis, Allenopithecus_nigrovir...
+## $ Refs1          &lt;int&gt; 227, 227, 227, 227, 227, 227, 227, 227, 227, 227, 22...
+## $ Refs2          &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ...
+## $ habitat        &lt;chr&gt; &quot;forest&quot;, &quot;savanna&quot;, &quot;shrubland&quot;, &quot;grassland&quot;, &quot;wetl...
+## $ value          &lt;int&gt; 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0...</code></pre>
+<pre class="r"><code>habitat_1&lt;-habitat_tidy_1%&gt;%pivot_wider(names_from=&quot;habitat&quot;, values_from = &quot;value&quot;)
+summary(habitat_1)</code></pre>
+<pre><code>##              Family               Genus                            CommonName 
+##  Cercopithecidae:162   Lepilemur     : 26   Black_crowned_Dwarf_Marmoset:  2  
+##  Pitheciidae    : 60   Microcebus    : 24   Black_headed_Uacari         :  2  
+##  Callitrichidae : 50   Cercopithecus : 23   Kenya_Coast_Dwarf_Galago    :  2  
+##  Cheirogaleidae : 40   Macaca        : 23   Mountain_Dwarf_Galago       :  2  
+##  Cebidae        : 30   Plecturocebus : 22   Mozambique_Dwarf_Galago     :  2  
+##  Atelidae       : 26   Trachypithecus: 20   (Other)                     :515  
+##  (Other)        :158   (Other)       :388   NA&#39;s                        :  1  
+##                         Species                        Species..ITIS.
+##  Allenopithecus_nigroviridis:  1   Allenopithecus_nigroviridis:  1   
+##  Allocebus_trichotis        :  1   Allocebus_trichotis        :  1   
+##  Allochrocebus_lhoesti      :  1   Allochrocebus_lhoesti      :  1   
+##  Allochrocebus_preussi      :  1   Allochrocebus_preussi      :  1   
+##  Allochrocebus_solatus      :  1   Allochrocebus_solatus      :  1   
+##  (Other)                    :499   (Other)                    :502   
+##  NA&#39;s                       : 22   NA&#39;s                       : 19   
+##      Refs1            Refs2            forest          savanna      
+##  Min.   :  30.0   Min.   : 112.0   Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.: 227.0   1st Qu.: 247.0   1st Qu.:1.0000   1st Qu.:0.0000  
+##  Median : 227.0   Median : 262.0   Median :1.0000   Median :0.0000  
+##  Mean   : 338.8   Mean   : 474.5   Mean   :0.9385   Mean   :0.1091  
+##  3rd Qu.: 227.0   3rd Qu.: 703.5   3rd Qu.:1.0000   3rd Qu.:0.0000  
+##  Max.   :1158.0   Max.   :1116.0   Max.   :1.0000   Max.   :1.0000  
+##  NA&#39;s   :46       NA&#39;s   :515      NA&#39;s   :22       NA&#39;s   :22      
+##    shrubland         grassland          wetlands        rocky.areas     
+##  Min.   :0.00000   Min.   :0.00000   Min.   :0.00000   Min.   :0.00000  
+##  1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.00000  
+##  Median :0.00000   Median :0.00000   Median :0.00000   Median :0.00000  
+##  Mean   :0.07143   Mean   :0.01587   Mean   :0.09127   Mean   :0.01984  
+##  3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.00000  
+##  Max.   :1.00000   Max.   :1.00000   Max.   :1.00000   Max.   :1.00000  
+##  NA&#39;s   :22        NA&#39;s   :22        NA&#39;s   :22        NA&#39;s   :22       
+##      desert        
+##  Min.   :0.000000  
+##  1st Qu.:0.000000  
+##  Median :0.000000  
+##  Mean   :0.001984  
+##  3rd Qu.:0.000000  
+##  Max.   :1.000000  
+##  NA&#39;s   :22</code></pre>
+<p><em>Both datasets were already tidy, but I wanted to see what would happen if I changed up the Habitat dataset by combining all the habitats into one column, with the name of the habitat as the values. I achieved this by using pivot_longer to make “habitat” as a new column with “habitat_(insert habitat here) as the values. To get rid of”habitat"" in the value names, I used mutate with recode so just the type of habitat was left. Then I used filter to get rid of any rows that weren’t in that habitat (have a 0 as the value) and then used select to get rid of the value column altogether. I realized this wasn’t as good as the original dataset, so I ran habitat_tidy again, but this time without getting filtering the value column or geeting rid of the value column. Then I used pivot_wider to make each habitat it’s own column with numerical values to designate which habitats the primates reside.</em></p>
+<pre class="r"><code>#Joining
+mass_and_habitat&lt;-inner_join(habitat_1, BodyMass, by = c(&quot;Family&quot;, &quot;Genus&quot;, &quot;CommonName&quot;, &quot;Species&quot;, &quot;Species..ITIS.&quot;))</code></pre>
+<pre><code>## Warning: Column `Species..ITIS.` joining factors with different levels, coercing
+## to character vector</code></pre>
+<pre class="r"><code>summary(mass_and_habitat)</code></pre>
+<pre><code>##              Family               Genus                      CommonName 
+##  Cercopithecidae:167   Lepilemur     : 45   Black_Lemur           :  3  
+##  Pitheciidae    : 63   Microcebus    : 34   Fat_tailed_Dwarf_Lemur:  3  
+##  Cheirogaleidae : 57   Eulemur       : 25   Gray_Bamboo_Lemur     :  3  
+##  Callitrichidae : 51   Macaca        : 24   Rufous_Brown_Lemur    :  3  
+##  Lepilemuridae  : 45   Trachypithecus: 23   Verreaux_s_Sifaka     :  3  
+##  Lemuridae      : 42   Plecturocebus : 22   (Other)               :591  
+##  (Other)        :182   (Other)       :434   NA&#39;s                  :  1  
+##                   Species    Species..ITIS.        Refs1.x      
+##  Cheirogaleus_medius  :  3   Length:607         Min.   :  30.0  
+##  Eulemur_macaco       :  3   Class :character   1st Qu.: 227.0  
+##  Eulemur_rufus        :  3   Mode  :character   Median : 227.0  
+##  Hapalemur_griseus    :  3                      Mean   : 316.5  
+##  Propithecus_verreauxi:  3                      3rd Qu.: 227.0  
+##  (Other)              :570                      Max.   :1158.0  
+##  NA&#39;s                 : 22                      NA&#39;s   :45      
+##      Refs2            forest          savanna         shrubland      
+##  Min.   : 112.0   Min.   :0.0000   Min.   :0.0000   Min.   :0.00000  
+##  1st Qu.: 233.5   1st Qu.:1.0000   1st Qu.:0.0000   1st Qu.:0.00000  
+##  Median : 261.0   Median :1.0000   Median :0.0000   Median :0.00000  
+##  Mean   : 451.2   Mean   :0.9487   Mean   :0.1009   Mean   :0.07008  
+##  3rd Qu.: 607.2   3rd Qu.:1.0000   3rd Qu.:0.0000   3rd Qu.:0.00000  
+##  Max.   :1116.0   Max.   :1.0000   Max.   :1.0000   Max.   :1.00000  
+##  NA&#39;s   :595      NA&#39;s   :22       NA&#39;s   :22       NA&#39;s   :22       
+##    grassland          wetlands        rocky.areas          desert        
+##  Min.   :0.00000   Min.   :0.00000   Min.   :0.00000   Min.   :0.000000  
+##  1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.000000  
+##  Median :0.00000   Median :0.00000   Median :0.00000   Median :0.000000  
+##  Mean   :0.01367   Mean   :0.08205   Mean   :0.02051   Mean   :0.001709  
+##  3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.000000  
+##  Max.   :1.00000   Max.   :1.00000   Max.   :1.00000   Max.   :1.000000  
+##  NA&#39;s   :22        NA&#39;s   :22        NA&#39;s   :22        NA&#39;s   :22        
+##   BodyMass_kg      BodyMassMale_kg   BodyMassFemale_kg    Refs1.y   
+##  Min.   :  0.030   Min.   :  0.030   Min.   : 0.0307   210    : 74  
+##  1st Qu.:  0.675   1st Qu.:  0.813   1st Qu.: 0.7312   264    : 50  
+##  Median :  2.050   Median :  3.680   Median : 2.7050   278    : 34  
+##  Mean   :  4.473   Mean   :  6.502   Mean   : 4.4967   209    : 11  
+##  3rd Qu.:  6.220   3rd Qu.:  7.505   3rd Qu.: 6.2125   270    : 11  
+##  Max.   :130.000   Max.   :169.300   Max.   :97.5000   (Other):369  
+##  NA&#39;s   :62        NA&#39;s   :242       NA&#39;s   :251       NA&#39;s   : 58</code></pre>
+<p><em>I decided to join the datasets by the common variables of Family, Genus, CommonName, Species, and Species (ITIS). Through this joining, I can easily compare habitats, body mass, and refs.</em></p>
+<pre class="r"><code>#Wrangling
+#mutate
+ratio&lt;-mass_and_habitat%&gt;%mutate(BodyMassRatio = BodyMassMale_kg/BodyMassFemale_kg)
+summary(ratio)</code></pre>
+<pre><code>##              Family               Genus                      CommonName 
+##  Cercopithecidae:167   Lepilemur     : 45   Black_Lemur           :  3  
+##  Pitheciidae    : 63   Microcebus    : 34   Fat_tailed_Dwarf_Lemur:  3  
+##  Cheirogaleidae : 57   Eulemur       : 25   Gray_Bamboo_Lemur     :  3  
+##  Callitrichidae : 51   Macaca        : 24   Rufous_Brown_Lemur    :  3  
+##  Lepilemuridae  : 45   Trachypithecus: 23   Verreaux_s_Sifaka     :  3  
+##  Lemuridae      : 42   Plecturocebus : 22   (Other)               :591  
+##  (Other)        :182   (Other)       :434   NA&#39;s                  :  1  
+##                   Species    Species..ITIS.        Refs1.x      
+##  Cheirogaleus_medius  :  3   Length:607         Min.   :  30.0  
+##  Eulemur_macaco       :  3   Class :character   1st Qu.: 227.0  
+##  Eulemur_rufus        :  3   Mode  :character   Median : 227.0  
+##  Hapalemur_griseus    :  3                      Mean   : 316.5  
+##  Propithecus_verreauxi:  3                      3rd Qu.: 227.0  
+##  (Other)              :570                      Max.   :1158.0  
+##  NA&#39;s                 : 22                      NA&#39;s   :45      
+##      Refs2            forest          savanna         shrubland      
+##  Min.   : 112.0   Min.   :0.0000   Min.   :0.0000   Min.   :0.00000  
+##  1st Qu.: 233.5   1st Qu.:1.0000   1st Qu.:0.0000   1st Qu.:0.00000  
+##  Median : 261.0   Median :1.0000   Median :0.0000   Median :0.00000  
+##  Mean   : 451.2   Mean   :0.9487   Mean   :0.1009   Mean   :0.07008  
+##  3rd Qu.: 607.2   3rd Qu.:1.0000   3rd Qu.:0.0000   3rd Qu.:0.00000  
+##  Max.   :1116.0   Max.   :1.0000   Max.   :1.0000   Max.   :1.00000  
+##  NA&#39;s   :595      NA&#39;s   :22       NA&#39;s   :22       NA&#39;s   :22       
+##    grassland          wetlands        rocky.areas          desert        
+##  Min.   :0.00000   Min.   :0.00000   Min.   :0.00000   Min.   :0.000000  
+##  1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.000000  
+##  Median :0.00000   Median :0.00000   Median :0.00000   Median :0.000000  
+##  Mean   :0.01367   Mean   :0.08205   Mean   :0.02051   Mean   :0.001709  
+##  3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.000000  
+##  Max.   :1.00000   Max.   :1.00000   Max.   :1.00000   Max.   :1.000000  
+##  NA&#39;s   :22        NA&#39;s   :22        NA&#39;s   :22        NA&#39;s   :22        
+##   BodyMass_kg      BodyMassMale_kg   BodyMassFemale_kg    Refs1.y   
+##  Min.   :  0.030   Min.   :  0.030   Min.   : 0.0307   210    : 74  
+##  1st Qu.:  0.675   1st Qu.:  0.813   1st Qu.: 0.7312   264    : 50  
+##  Median :  2.050   Median :  3.680   Median : 2.7050   278    : 34  
+##  Mean   :  4.473   Mean   :  6.502   Mean   : 4.4967   209    : 11  
+##  3rd Qu.:  6.220   3rd Qu.:  7.505   3rd Qu.: 6.2125   270    : 11  
+##  Max.   :130.000   Max.   :169.300   Max.   :97.5000   (Other):369  
+##  NA&#39;s   :62        NA&#39;s   :242       NA&#39;s   :251       NA&#39;s   : 58  
+##  BodyMassRatio    
+##  Min.   : 0.1083  
+##  1st Qu.: 0.9984  
+##  Median : 1.1015  
+##  Mean   : 1.2423  
+##  3rd Qu.: 1.3857  
+##  Max.   :10.6842  
+##  NA&#39;s   :259</code></pre>
+<pre class="r"><code>#Filter
+Tenkg&lt;-ratio%&gt;%filter(BodyMass_kg&gt;10)
+summary(Tenkg)</code></pre>
+<pre><code>##              Family              Genus                   CommonName
+##  Cercopithecidae:31   Papio         : 6   Drill               : 2  
+##  Hominidae      : 6   Semnopithecus : 6   Arunachal_Macaque   : 1  
+##  Cebidae        : 1   Macaca        : 5   Barbary_Macaque     : 1  
+##  Hylobatidae    : 1   Rhinopithecus : 5   Bengal_Sacred_Langur: 1  
+##  Aotidae        : 0   Mandrillus    : 3   Black_Langur        : 1  
+##  Atelidae       : 0   Trachypithecus: 3   Bonobo              : 1  
+##  (Other)        : 0   (Other)       :11   (Other)             :32  
+##                    Species   Species..ITIS.        Refs1.x           Refs2    
+##  Mandrillus_leucophaeus: 2   Length:39          Min.   : 227.0   Min.   :896  
+##  Cebus_yuracus         : 1   Class :character   1st Qu.: 227.0   1st Qu.:896  
+##  Gorilla_beringei      : 1   Mode  :character   Median : 227.0   Median :896  
+##  Gorilla_gorilla       : 1                      Mean   : 257.2   Mean   :896  
+##  Macaca_arctoides      : 1                      3rd Qu.: 227.0   3rd Qu.:896  
+##  Macaca_munzala        : 1                      Max.   :1109.0   Max.   :896  
+##  (Other)               :32                                       NA&#39;s   :38   
+##      forest          savanna         shrubland        grassland     
+##  Min.   :0.0000   Min.   :0.0000   Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.:1.0000   1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.0000  
+##  Median :1.0000   Median :0.0000   Median :0.0000   Median :0.0000  
+##  Mean   :0.9487   Mean   :0.2564   Mean   :0.1795   Mean   :0.1282  
+##  3rd Qu.:1.0000   3rd Qu.:0.5000   3rd Qu.:0.0000   3rd Qu.:0.0000  
+##  Max.   :1.0000   Max.   :1.0000   Max.   :1.0000   Max.   :1.0000  
+##                                                                     
+##     wetlands        rocky.areas         desert         BodyMass_kg    
+##  Min.   :0.00000   Min.   :0.0000   Min.   :0.00000   Min.   : 10.15  
+##  1st Qu.:0.00000   1st Qu.:0.0000   1st Qu.:0.00000   1st Qu.: 11.52  
+##  Median :0.00000   Median :0.0000   Median :0.00000   Median : 15.00  
+##  Mean   :0.02564   Mean   :0.2051   Mean   :0.02564   Mean   : 24.54  
+##  3rd Qu.:0.00000   3rd Qu.:0.0000   3rd Qu.:0.00000   3rd Qu.: 21.23  
+##  Max.   :1.00000   Max.   :1.0000   Max.   :1.00000   Max.   :130.00  
+##                                                                       
+##  BodyMassMale_kg  BodyMassFemale_kg    Refs1.y   BodyMassRatio  
+##  Min.   : 10.30   Min.   : 8.000    210    :10   Min.   :1.071  
+##  1st Qu.: 14.00   1st Qu.: 9.867    1126   : 2   1st Qu.:1.354  
+##  Median : 17.60   Median :11.325    1127   : 2   Median :1.620  
+##  Mean   : 30.35   Mean   :18.438    224    : 2   Mean   :1.638  
+##  3rd Qu.: 21.80   3rd Qu.:12.950    314    : 2   3rd Qu.:1.802  
+##  Max.   :169.30   Max.   :97.500    331    : 2   Max.   :2.688  
+##  NA&#39;s   :2        NA&#39;s   :5         (Other):19   NA&#39;s   :5</code></pre>
+<pre class="r"><code>#Select
+Tenkg_Ratio&lt;-Tenkg%&gt;%select(3, 8:17, 19)
+summary(Tenkg_Ratio)</code></pre>
+<pre><code>##                 CommonName     forest          savanna         shrubland     
+##  Drill               : 2   Min.   :0.0000   Min.   :0.0000   Min.   :0.0000  
+##  Arunachal_Macaque   : 1   1st Qu.:1.0000   1st Qu.:0.0000   1st Qu.:0.0000  
+##  Barbary_Macaque     : 1   Median :1.0000   Median :0.0000   Median :0.0000  
+##  Bengal_Sacred_Langur: 1   Mean   :0.9487   Mean   :0.2564   Mean   :0.1795  
+##  Black_Langur        : 1   3rd Qu.:1.0000   3rd Qu.:0.5000   3rd Qu.:0.0000  
+##  Bonobo              : 1   Max.   :1.0000   Max.   :1.0000   Max.   :1.0000  
+##  (Other)             :32                                                     
+##    grassland         wetlands        rocky.areas         desert       
+##  Min.   :0.0000   Min.   :0.00000   Min.   :0.0000   Min.   :0.00000  
+##  1st Qu.:0.0000   1st Qu.:0.00000   1st Qu.:0.0000   1st Qu.:0.00000  
+##  Median :0.0000   Median :0.00000   Median :0.0000   Median :0.00000  
+##  Mean   :0.1282   Mean   :0.02564   Mean   :0.2051   Mean   :0.02564  
+##  3rd Qu.:0.0000   3rd Qu.:0.00000   3rd Qu.:0.0000   3rd Qu.:0.00000  
+##  Max.   :1.0000   Max.   :1.00000   Max.   :1.0000   Max.   :1.00000  
+##                                                                       
+##   BodyMass_kg     BodyMassMale_kg  BodyMassFemale_kg BodyMassRatio  
+##  Min.   : 10.15   Min.   : 10.30   Min.   : 8.000    Min.   :1.071  
+##  1st Qu.: 11.52   1st Qu.: 14.00   1st Qu.: 9.867    1st Qu.:1.354  
+##  Median : 15.00   Median : 17.60   Median :11.325    Median :1.620  
+##  Mean   : 24.54   Mean   : 30.35   Mean   :18.438    Mean   :1.638  
+##  3rd Qu.: 21.23   3rd Qu.: 21.80   3rd Qu.:12.950    3rd Qu.:1.802  
+##  Max.   :130.00   Max.   :169.30   Max.   :97.500    Max.   :2.688  
+##                   NA&#39;s   :2        NA&#39;s   :5         NA&#39;s   :5</code></pre>
+<pre class="r"><code>#arrange
+arrange_m_and_h&lt;-ratio%&gt;%arrange(desc(BodyMass_kg))
+summary(arrange_m_and_h)</code></pre>
+<pre><code>##              Family               Genus                      CommonName 
+##  Cercopithecidae:167   Lepilemur     : 45   Black_Lemur           :  3  
+##  Pitheciidae    : 63   Microcebus    : 34   Fat_tailed_Dwarf_Lemur:  3  
+##  Cheirogaleidae : 57   Eulemur       : 25   Gray_Bamboo_Lemur     :  3  
+##  Callitrichidae : 51   Macaca        : 24   Rufous_Brown_Lemur    :  3  
+##  Lepilemuridae  : 45   Trachypithecus: 23   Verreaux_s_Sifaka     :  3  
+##  Lemuridae      : 42   Plecturocebus : 22   (Other)               :591  
+##  (Other)        :182   (Other)       :434   NA&#39;s                  :  1  
+##                   Species    Species..ITIS.        Refs1.x      
+##  Cheirogaleus_medius  :  3   Length:607         Min.   :  30.0  
+##  Eulemur_macaco       :  3   Class :character   1st Qu.: 227.0  
+##  Eulemur_rufus        :  3   Mode  :character   Median : 227.0  
+##  Hapalemur_griseus    :  3                      Mean   : 316.5  
+##  Propithecus_verreauxi:  3                      3rd Qu.: 227.0  
+##  (Other)              :570                      Max.   :1158.0  
+##  NA&#39;s                 : 22                      NA&#39;s   :45      
+##      Refs2            forest          savanna         shrubland      
+##  Min.   : 112.0   Min.   :0.0000   Min.   :0.0000   Min.   :0.00000  
+##  1st Qu.: 233.5   1st Qu.:1.0000   1st Qu.:0.0000   1st Qu.:0.00000  
+##  Median : 261.0   Median :1.0000   Median :0.0000   Median :0.00000  
+##  Mean   : 451.2   Mean   :0.9487   Mean   :0.1009   Mean   :0.07008  
+##  3rd Qu.: 607.2   3rd Qu.:1.0000   3rd Qu.:0.0000   3rd Qu.:0.00000  
+##  Max.   :1116.0   Max.   :1.0000   Max.   :1.0000   Max.   :1.00000  
+##  NA&#39;s   :595      NA&#39;s   :22       NA&#39;s   :22       NA&#39;s   :22       
+##    grassland          wetlands        rocky.areas          desert        
+##  Min.   :0.00000   Min.   :0.00000   Min.   :0.00000   Min.   :0.000000  
+##  1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.000000  
+##  Median :0.00000   Median :0.00000   Median :0.00000   Median :0.000000  
+##  Mean   :0.01367   Mean   :0.08205   Mean   :0.02051   Mean   :0.001709  
+##  3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.000000  
+##  Max.   :1.00000   Max.   :1.00000   Max.   :1.00000   Max.   :1.000000  
+##  NA&#39;s   :22        NA&#39;s   :22        NA&#39;s   :22        NA&#39;s   :22        
+##   BodyMass_kg      BodyMassMale_kg   BodyMassFemale_kg    Refs1.y   
+##  Min.   :  0.030   Min.   :  0.030   Min.   : 0.0307   210    : 74  
+##  1st Qu.:  0.675   1st Qu.:  0.813   1st Qu.: 0.7312   264    : 50  
+##  Median :  2.050   Median :  3.680   Median : 2.7050   278    : 34  
+##  Mean   :  4.473   Mean   :  6.502   Mean   : 4.4967   209    : 11  
+##  3rd Qu.:  6.220   3rd Qu.:  7.505   3rd Qu.: 6.2125   270    : 11  
+##  Max.   :130.000   Max.   :169.300   Max.   :97.5000   (Other):369  
+##  NA&#39;s   :62        NA&#39;s   :242       NA&#39;s   :251       NA&#39;s   : 58  
+##  BodyMassRatio    
+##  Min.   : 0.1083  
+##  1st Qu.: 0.9984  
+##  Median : 1.1015  
+##  Mean   : 1.2423  
+##  3rd Qu.: 1.3857  
+##  Max.   :10.6842  
+##  NA&#39;s   :259</code></pre>
+<pre class="r"><code>#group_by, summarize, and summary statistics
+  #summary statistics of average body mass for each Common Name
+summ_stats_BodyMass&lt;-ratio%&gt;%
+  group_by(Species..ITIS.)%&gt;%
+  summarize(mean_BodyMass=mean(BodyMass_kg,na.rm=T), 
+            sd_BodyMass=sd(BodyMass_kg, na.rm=T), 
+            var_BodyMass=var(BodyMass_kg, na.rm =T),
+            med_BodyMass=median(BodyMass_kg, na.rm=T))
+summary(summ_stats_BodyMass)</code></pre>
+<pre><code>##  Species..ITIS.     mean_BodyMass      sd_BodyMass      var_BodyMass    
+##  Length:507         Min.   :  0.030   Min.   :0.0000   Min.   : 0.0000  
+##  Class :character   1st Qu.:  0.660   1st Qu.:0.0141   1st Qu.: 0.0002  
+##  Mode  :character   Median :  2.360   Median :0.0566   Median : 0.0032  
+##                     Mean   :  4.921   Mean   :0.2802   Mean   : 0.7672  
+##                     3rd Qu.:  6.500   3rd Qu.:0.2546   3rd Qu.: 0.0648  
+##                     Max.   :130.000   Max.   :7.6014   Max.   :57.7812  
+##                     NA&#39;s   :60        NA&#39;s   :414      NA&#39;s   :414      
+##   med_BodyMass    
+##  Min.   :  0.030  
+##  1st Qu.:  0.660  
+##  Median :  2.360  
+##  Mean   :  4.922  
+##  3rd Qu.:  6.500  
+##  Max.   :130.000  
+##  NA&#39;s   :60</code></pre>
+<pre class="r"><code>  #summary statistics of average male body mass for each Common Name
+summ_stats_MaleBodyMass&lt;-ratio%&gt;%
+  group_by(Species..ITIS.)%&gt;%
+  summarize(mean_MaleBodyMass=mean(BodyMassMale_kg,na.rm=T), 
+            sd_MaleBodyMass=sd(BodyMassMale_kg, na.rm=T), 
+            var_MaleBodyMass=var(BodyMassMale_kg, na.rm =T),
+            med_MaleBodyMass=median(BodyMassMale_kg, na.rm=T))
+summary(summ_stats_MaleBodyMass)</code></pre>
+<pre><code>##  Species..ITIS.     mean_MaleBodyMass sd_MaleBodyMass  var_MaleBodyMass
+##  Length:507         Min.   :  0.030   Min.   :0.0092   Min.   :0.0001  
+##  Class :character   1st Qu.:  0.830   1st Qu.:0.0308   1st Qu.:0.0010  
+##  Mode  :character   Median :  3.750   Median :0.0488   Median :0.0026  
+##                     Mean   :  6.617   Mean   :0.1658   Mean   :0.0732  
+##                     3rd Qu.:  7.700   3rd Qu.:0.2098   3rd Qu.:0.0490  
+##                     Max.   :169.300   Max.   :0.6633   Max.   :0.4399  
+##                     NA&#39;s   :150       NA&#39;s   :499      NA&#39;s   :499     
+##  med_MaleBodyMass 
+##  Min.   :  0.030  
+##  1st Qu.:  0.830  
+##  Median :  3.750  
+##  Mean   :  6.617  
+##  3rd Qu.:  7.700  
+##  Max.   :169.300  
+##  NA&#39;s   :150</code></pre>
+<pre class="r"><code>  #summary statistics of average female body mass for each Common Name
+summ_stats_FemaleBodyMass&lt;-ratio%&gt;%
+  group_by(Species..ITIS.)%&gt;%
+  summarize(mean_FemaleBodyMass=mean(BodyMassFemale_kg,na.rm=T), 
+            sd_FemaleBodyMass=sd(BodyMassFemale_kg, na.rm=T), 
+            var_FemaleBodyMass=var(BodyMassFemale_kg, na.rm =T),
+            med_FemaleBodyMass=median(BodyMassFemale_kg, na.rm=T))
+summary(summ_stats_FemaleBodyMass)</code></pre>
+<pre><code>##  Species..ITIS.     mean_FemaleBodyMass sd_FemaleBodyMass var_FemaleBodyMass
+##  Length:507         Min.   : 0.0307     Min.   :0.0191    Min.   :0.0004    
+##  Class :character   1st Qu.: 0.7355     1st Qu.:0.0269    1st Qu.:0.0007    
+##  Mode  :character   Median : 2.8100     Median :0.0612    Median :0.0038    
+##                     Mean   : 4.5673     Mean   :0.1233    Mean   :0.0356    
+##                     3rd Qu.: 6.2625     3rd Qu.:0.1579    3rd Qu.:0.0249    
+##                     Max.   :97.5000     Max.   :0.4738    Max.   :0.2244    
+##                     NA&#39;s   :159         NA&#39;s   :499       NA&#39;s   :499       
+##  med_FemaleBodyMass
+##  Min.   : 0.0307   
+##  1st Qu.: 0.7355   
+##  Median : 2.8100   
+##  Mean   : 4.5673   
+##  3rd Qu.: 6.2625   
+##  Max.   :97.5000   
+##  NA&#39;s   :159</code></pre>
+<pre class="r"><code>  #mean body mass of each family in wetlands habitat
+mean_WetlandsBodyMass&lt;-ratio%&gt;%
+  group_by(Family, wetlands)%&gt;%
+  summarize(mean_BodyMass=mean(BodyMass_kg, na.rm=T))
+summary(mean_WetlandsBodyMass)</code></pre>
+<pre><code>##              Family      wetlands      mean_BodyMass    
+##  Callitrichidae : 3   Min.   :0.0000   Min.   : 0.1139  
+##  Cebidae        : 3   1st Qu.:0.0000   1st Qu.: 0.4770  
+##  Cercopithecidae: 3   Median :0.0000   Median : 1.4233  
+##  Pitheciidae    : 3   Mean   :0.3043   Mean   : 5.5139  
+##  Tarsiidae      : 3   3rd Qu.:1.0000   3rd Qu.: 3.3035  
+##  Cheirogaleidae : 2   Max.   :1.0000   Max.   :76.5333  
+##  (Other)        :15   NA&#39;s   :9        NA&#39;s   :9</code></pre>
+<p><em>For the mutate function, I divided male body mass by female body mass to create a new column that gives the body mass ratio for the primates. Then I used filter to see how many primates had an average body mass over 10kg. Then I wanted to see directly what habitats and what the body mass ratio was for the primates with an average body mass over 10kg, so I used the select function for just the common name, the habitats, and the body mass ratio. Then I went back to the dataset ratio to arrange the average body mass from greatest to least. I used group_by and summarize to get some of the summary statistics for all of the Body Mass variables for each Species…ITIS. I tried to include min and max in the summary statistics, but I got too many error warning so I left it out. I also grouped the categorical variables Family and Wetlands to get the mean Body Mass for each familt at that habitat. </em></p>
+<pre class="r"><code>#Visualizing
+  #correlation heatmap
+    #compute correlation matrix of body masses
+corrmat&lt;-mass_and_habitat%&gt;%na.omit%&gt;%select(8:17)
+mat&lt;-cor(corrmat)</code></pre>
+<pre><code>## Warning in cor(corrmat): the standard deviation is zero</code></pre>
+<pre class="r"><code>    #tidy
+tidycor&lt;-mat%&gt;%as.data.frame%&gt;%
+  rownames_to_column%&gt;%
+  pivot_longer(-1,names_to=&quot;name&quot;,values_to=&quot;correlation&quot;)
+    #graph
+tidycor%&gt;%ggplot(aes(rowname,name,fill=correlation))+
+  geom_tile()+
+  scale_fill_gradient2(low=&quot;red&quot;,mid=&quot;white&quot;,high=&quot;blue&quot;)+ 
+  geom_text(aes(label=round(correlation,2)),color = &quot;black&quot;, size = 4)+ 
+  theme(axis.text.x = element_text(angle = 90, hjust=1))+ 
+  coord_fixed()</code></pre>
+<pre><code>## Warning: Removed 60 rows containing missing values (geom_text).</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>  #plot 2
+ggplot(data = mass_and_habitat, aes(x = Family, y = BodyMass_kg, color=Genus))+
+  geom_point(size=3)</code></pre>
+<pre><code>## Warning: Removed 62 rows containing missing values (geom_point).</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<pre class="r"><code>  #plot3
+ggplot(ratio, aes(x = Family, y = BodyMassRatio))+
+geom_bar(stat=&quot;summary&quot;,fun.y=&quot;mean&quot;, position=&quot;dodge&quot;)+
+geom_errorbar(stat=&quot;summary&quot;,position=&quot;dodge&quot;)</code></pre>
+<pre><code>## Warning: Removed 259 rows containing non-finite values (stat_summary).</code></pre>
+<pre><code>## Warning: Removed 259 rows containing non-finite values (stat_summary).</code></pre>
+<pre><code>## No summary function supplied, defaulting to `mean_se()</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_errorbar).</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-5-3.png" width="672" /></p>
+<p><em>For the correlation heatmap, I looked at the correlation between body masses and habitats. I already know it’s incorrect since there isn’t data available for the correlation between body masses and 4 of the habitats, I’m just uncertain on how to fix it. But from this map, it looks like there is little correlation between body masses and the wetlands habitat, but moderate correlation between body masses and the savanna and shrubland habitats. When looking at the correlation between body mass, male body mass, and female body mass, it is clear that all of those have a pretty strong correlation.</em></p>
+<p><em>The second plot is a simple scatter plot showing the Body Masses from each individual per family. From this graph, it is clear to see that the family Hominidae has a significantly larger body mass than any other family. Hominidae, Cercopithecidae, and Cebidae seem to have the greatest variance in body mass.I also added the Genus as the color of the dots, but because of their quanity and proximity to each other, it is difficult to distinguish anything other than which Genus has the greatest body mass in each family.</em></p>
+<p><em>For plot 3 I graphed the mean body mass ratio for each family. This shows that for most of the families, the body mass ratio for males to females is 1, an only one family has a body mass ratio close to 2, which is tha same family with the largest overall body mass.</em></p>
+<pre class="r"><code>#Dimentionality Reduction
+library(cluster)
+library(GGally)</code></pre>
+<pre><code>## Warning: package &#39;GGally&#39; was built under R version 3.6.3</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;GGally&#39;:
+##   method from   
+##   +.gg   ggplot2</code></pre>
+<pre><code>## 
+## Attaching package: &#39;GGally&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     nasa</code></pre>
+<pre class="r"><code>  #average silhouette width 
+pam_dat&lt;-mass_and_habitat%&gt;%select(15:17)%&gt;%na.omit
+sil_width&lt;-vector()
+for(i in 2:10){
+  pam_fit &lt;- pam(pam_dat, k = i)
+  sil_width[i] &lt;- pam_fit$silinfo$avg.width
+}
+ ggplot()+geom_line(aes(x=1:10,y=sil_width))+scale_x_continuous(name=&quot;k&quot;,breaks=1:10)</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_path).</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>pam1&lt;-pam_dat %&gt;% pam(k=3)
+pam1</code></pre>
+<pre><code>## Medoids:
+##       ID BodyMass_kg BodyMassMale_kg BodyMassFemale_kg
+## [1,] 343        6.99           7.770             6.220
+## [2,] 253        0.83           0.854             0.805
+## [3,] 261       57.15          78.500            35.800
+## Clustering vector:
+##   [1] 1 2 1 2 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 2 2 2 2 2 2 1
+##  [38] 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 2 2 2 2 1 2 2 2 1 1
+##  [75] 1 1 1 1 2 2 1 2 2 2 2 2 2 2 2 2 2 2 2 1 1 1 2 1 1 1 1 1 1 1 2 1 2 2 2 2 2
+## [112] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3 3 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1 1 1 1 2
+## [149] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 1 1 2 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+## [186] 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 2
+## [223] 2 2 2 2 2 3 3 1 1 1 1 1 1 2 2 2 2 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2
+## [260] 3 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 1 1 1 2 2 2 1 1 1 1 1 1 1 1 2
+## [297] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2
+## [334] 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2
+## Objective function:
+##    build     swap 
+## 4.332644 3.657763 
+## 
+## Available components:
+##  [1] &quot;medoids&quot;    &quot;id.med&quot;     &quot;clustering&quot; &quot;objective&quot;  &quot;isolation&quot; 
+##  [6] &quot;clusinfo&quot;   &quot;silinfo&quot;    &quot;diss&quot;       &quot;call&quot;       &quot;data&quot;</code></pre>
+<pre class="r"><code>plot(pam1, which=2)</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+<pre class="r"><code>#I can&#39;t get this plot to work so I&#39;m leaving it as a comment to show that I tried:(
+  #mass_and_habitat%&gt;% mutate(cluster=as.factor(pam1$clustering)) %&gt;% ggpairs(columns = 15:17, aes(color=cluster))</code></pre>
+<p><em>I ran k-means/PAM clustering and I found that 3 clusters should be chosen to maximize the silhouette width. I was not able to get the ggplot to work, but I found that the average silouette width is 0.62, which means, based on the rule-of-thumb thresholds, the final fit of this cluster is reasonable.</em></p>

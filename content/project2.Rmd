@@ -1,0 +1,308 @@
+---
+title: "Project 2"
+author: "Cynthia Kulak cek2338"
+date: "5/1/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Libraries
+```{r}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(sandwich)
+library(lmtest)
+library(nnet)
+library(plotROC)
+library(pROC)
+library(glmnet)
+```
+
+## Data
+```{r}
+possum<-read.csv("possum.csv")
+possum<-possum%>%select(-1, -2, -4, -7, -8, -11, -12, -13)
+```
+I chose to use the possum dataset for this project, which has 15 variables and 104 observations of morphometric measurements of possums in Australia. I chose to tidy the data to include only the variables I wanted focus on which are: site, sex, age, totlnght, taill, chest, and belly. Site is one of the seven sites the possum was captured, age is in years, totlngth is the total length of the possum, taill is the length of the tail, chest is the measurement of the girth of the chest, and belly is the measurement of the girth of the belly. All numerric measurements (other than site and age) are in cm. 
+
+
+## Manova
+```{r}
+#MANOVA
+#sex
+possum_sex_manova <- manova(cbind(age, totlngth, taill, chest, belly) ~ sex, data = possum)
+summary(possum_sex_manova)
+
+#site
+possum_site<-possum%>%
+  mutate(site = recode(site, "1"="one", "2"="two", "3"="three", "4"="four", "5"="five", "6"="six", "7"="seven"))
+possum_site_manova <- manova(cbind(age, totlngth, taill, chest, belly) ~ site, data = possum_site)
+summary(possum_site_manova)
+ 
+
+#univariate ANOVAs
+summary.aov(possum_site_manova)
+#age = no mean difference between site (.57)
+#total length = mean difference between site (6.86e^-11)
+#tail length = mean difference between site (8.74e^-8)
+#chest girth = mean difference between site (1.17e^-6)
+#belly girth = mean difference between site (.005)
+
+#post-hoc t tests
+pairwise.t.test(possum_site$age, possum$site, p.adj = "none")
+#none of the groups differ which we knew already
+
+#with adjustment of 0.00122:
+  #still none
+
+pairwise.t.test(possum_site$totlngth, possum$site, p.adj = "none")
+#1 and 5,6,7
+#2 and all
+#3 and 4
+#4 and 5,6,7
+
+#with adjustment of 0.00122:
+  #1 and 2,6,7
+  #2 and 3,4,5,7
+  #4 and 5,6,7
+
+pairwise.t.test(possum_site$taill, possum$site, p.adj = "none")
+#1 and 4,5,6,7
+#2 and all
+#3 and 4
+#4 and 5,6,7
+
+#with adjustment of 0.00122:
+  #1 and 4
+  #2 and 4,5,6
+
+pairwise.t.test(possum_site$chest, possum$site, p.adj = "none")
+#1 and 2,4,5,6,7
+#2 and 4
+#3 and 4,6
+#4 and 5,6,7
+#5 and 6
+
+#with adjustment of 0.00122:
+  #1 and 6,7
+  #2 and 4
+  #4 and 5,6,7
+
+pairwise.t.test(possum_site$belly, possum$site, p.adj = "none")
+#1 and 2,6
+#2 and 3,4
+#3 and 4,5,6
+#4 and 5,6,7
+
+#with adjustment of 0.00122:
+  #none
+
+#1 manova
+#5 measurements = 5 anovas
+#7 sites * 5 measurements = 35 t-tests
+#41 tests total (not including the first manova using sex)
+
+#type-I error
+1 - (0.95^41)
+#0.878
+
+#bonferroni correction
+0.05/41
+#0.00122
+
+#assumptions
+  #homogeneity of (co)variances
+covmats<-possum_site%>%group_by(site)%>%do(covs=cov(.[3:7]))
+for(i in 1:7){print(as.character(covmats$site[i])); print(covmats$covs[i])}
+```
+First I tried to ru the MANOVA with the binary variable, sex, but the p-value was not significant (0.78), so there isn't a mean difference between the sexes for any of the measurements. To continue with the rest of the question, I decided to try it with the categorical variable, site. First I had to tidy the data to switch site from being numeric to categorical, then I ran the MANOVA. This time, the p-value was significant (1.86e^-15), so at least some of the numerics have a mean difference between the sites. Then I ran 5 univariate ANOVAs and 35 post-hoc t tests to find which groups differ. I ran 41 tests in total, and have an 87.8% chance of having a type-1 error. I used a bonferroni correction to adjust the significance levels, which led me to the conclusion that none of the sites differ by age or by belly girth, and sites 2 and 4 differ across all other variables. When checking the assumption of homogeneity of (co)variances, all the numbers across all the sites varied, which leads me to believe that the assumption isn't met.
+
+## Randomization
+```{r}
+#randomization
+set.seed(348)
+possum_site%>%group_by(sex)%>%summarize(s=sd(totlngth))%>%summarize(diff(s))
+rand_dist<-vector()
+for(i in 1:5000){
+  new<-data.frame(totlngth=sample(possum_site$totlngth),sex=possum_site$sex)
+  rand_dist[i]<-mean(new[new$sex=="m",]$totlngth)-
+    mean(new[new$sex=="f",]$totlngth)
+  }
+
+mean(rand_dist< -0.1576551 | rand_dist > 0.1576551)
+#0.8484
+
+
+#plot
+{hist(rand_dist,main="",ylab=""); abline(v = 0.1576551,col="red")}
+```
+Null hypothesis: the mean of the total length of possums is the same for males and females. Alternative hypothesis: the mean of the total length of possums is different for males and females. Because the  p-value is 0.8484, we fail to reject the null hypothesis and conclude that the total length of possums is the same for males and females. This supports the conclusion made from part one using MANOVA to check for any mean differences of the measurements between the sexes. 
+
+
+## Linear Regression
+```{r}
+possum_na<-possum_site%>%na.omit
+
+#centering 
+possum_na$totlngth_c <- possum_na$totlngth - mean(possum_na$totlngth, na.rm = T)
+possum_na$taill_c <- possum_na$taill - mean(possum_na$taill, na.rm = T)
+
+#linear regression
+fit<-lm(totlngth_c ~ age+taill_c+age*taill_c, data=possum_na)
+summary(fit)
+ 
+
+#plot
+qplot(x = taill_c, y = totlngth_c, color = age, data = possum_na) +
+  stat_smooth(method = "lm", se = FALSE, fullrange = TRUE)
+
+#assumptions 
+resids<-fit$residuals
+fitvals<-fit$fitted.values
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, color='red')
+#pretty scattered so meets homoskedsaticity assumption
+ggplot()+geom_histogram(aes(resids), bins=20)
+#normal distribution
+ggplot()+geom_qq(aes(sample=resids))+geom_qq_line(aes(sample=resids), color='red')
+#relatively linear
+
+#regression with robust standard errors
+coeftest(fit, vcov = vcovHC(fit))
+
+#What proportion of the variation in the outcome does your model explain?
+(sum((possum_na$totlngth-mean(possum_na$totlngth))^2)-
+    sum(fit$residuals^2))/
+  sum((possum_na$totlngth-mean(possum_na$totlngth))^2)
+```
+After running the linear regression, according to the intercept, when age and tail length are 0, the total length of a possum is -1.6. When keeping tail length fixed, for every one unit increase in age, total possum length increases by 0.44. When keeping age fixed, for every one unit increase in tail length, there is a 1.67 unit increase in total possum length. When accounting for the interaction between tail length and age, the total possum length decreases by 0.14. 
+When checking for assumptions through graphs, the points on the scatterplot are pretty scattered which suggests it meets the homoskedsaticity assumption, the histogram has a normal distribution, and the points on the last graph follow the line pretty well, which suggests it meets the linearity assumption.
+After recomputing with robust standard errors, the estimates didn't change, but the standard errors increased slightly for all except the interaction between tail length and age. 
+About 37% of the variation in the outcome is explained by the model.
+
+
+## Bootstrap
+```{r}
+set.seed(123)
+samp_distn<-replicate(5000, {
+boot_dat <- possum_na[sample(nrow(possum_na), replace=TRUE),] #bootstrap your data
+fit <- lm(totlngth_c~age+taill_c+age*taill_c, data=boot_dat) #fit model
+coef(fit) #save coefs
+})
+
+## Estimated SEs
+samp_distn %>% t %>% as.data.frame %>% summarize_all(sd)
+
+## Empirical 95% CI
+samp_distn %>% t %>% as.data.frame %>% gather %>% group_by(key) %>%
+summarize(lower=quantile(value,.025), upper=quantile(value,.975))
+
+```
+The bootstrapped standard errors are very slightly higher than the original standard errors, except for age is very slightly lower. Compared to the robust standard errors, the bootstrapped standard errors are slightly lower for all except the interaction between age and tail length. 
+
+
+## Logistic Regression
+```{r}
+possum_binary<-possum_na%>%mutate(y=ifelse(sex=="m",1,0))
+fit1<-glm(y~site+totlngth_c,data=possum_binary,family=binomial(link="logit"))
+exp(coeftest(fit1))
+
+#confusion matrix
+prob<-predict(fit1, type="response")
+truth<-fit1$y
+class_diag <- function(probs,truth){
+#CONFUSION MATRIX: CALCULATE ACCURACY, TPR, TNR, PPV
+tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+acc=sum(diag(tab))/sum(tab)
+sens=tab[2,2]/colSums(tab)[2]
+spec=tab[1,1]/colSums(tab)[1]
+ppv=tab[2,2]/rowSums(tab)[2]
+if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE) truth<-as.numeric(truth)-1
+#CALCULATE EXACT AUC
+ord<-order(probs, decreasing=TRUE)
+probs <- probs[ord]; truth <- truth[ord]
+TPR=cumsum(truth)/max(1,sum(truth))
+FPR=cumsum(!truth)/max(1,sum(!truth))
+dup<-c(probs[-1]>=probs[-length(probs)], FALSE)
+TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+n <- length(TPR)
+auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+data.frame(acc,sens,spec,ppv,auc)
+}
+#acc = 0.63
+#sens = 0.76
+#spec = 0.44
+#ppv = 0.65
+#auc = 0.41
+
+#plot density of log-odds by binary outcome variable
+possum_binary$y<-as.factor(possum_binary$y)
+possum_binary$logit<-predict(fit1, type="link")
+possum_binary%>%ggplot()+geom_density(aes(logit, color=y, fill=y), alpha=.5)+
+  xlab("logg-odds(logit)")
+
+
+#ROC curve and calculate AUC
+fit_plot<-ggplot(fit1)+geom_roc(aes(d=y,m=totlngth_c,color=y),n.cuts=0)
+fit_plot
+calc_auc(fit_plot)
+  #0.41
+
+#10-fold CV and report average out-of-sample Accuracy, Sensitivity, and Recall
+set.seed(1234)
+k=10
+data<-possum_binary[sample(nrow(possum_binary)),] #put dataset in random order
+folds<-cut(seq(1:nrow(possum_binary)),breaks=k,labels=F) #create folds
+diags<-NULL
+for(i in 1:k){ # FOR EACH OF 10 FOLDS
+train<-data[folds!=i,] # CREATE TRAINING SET
+test<-data[folds==i,] # CREATE TESTING SET
+truth<-test$y
+fit<-glm(y~site+totlngth_c, data=train, family="binomial")
+probs<- predict(fit,newdata = test,type="response")
+diags<-rbind(diags,class_diag(probs,truth)) #CV DIAGNOSTICS FOR EACH FOLD
+}
+summarize_all(diags,mean) #AVERAGE THE DIAGNOSTICS ACROSS THE 10 FOLDS
+  #acc = 0.49
+  #sens = 0.61
+  #ppv = 0.59
+```
+From the logistic regression, at site 4 when keeping total length fixed, there is a 3x higher chance that a possum is male. At site 1 when keeping total length fixed, there is a 0.75 chance that a possum is male. Whe keeping site location fixed, for every one unit increase it total possum length, the chance of a possum being male increases by 0.94.
+From the confusion matrix, the accuracy is 0.63, the sensitivity is 0.76, the specificity is 0.44, and the recall is 0.65. The calculated AUC is 0.41, which suggests that the model is a poor predictor for real-world models. After performing a 10-fold CV, the accuracy is 0.49, the sensitivity is 0.61, and the recall is 0.59. 
+
+
+## LASSO Regression
+```{r}
+possum<-possum_binary%>%select(-2, -8, -9)
+
+set.seed(1234)
+x<-model.matrix(totlngth~. , data=possum)[,-1]
+y<-as.matrix(possum$totlngth)
+cv<-cv.glmnet(x,y, family="poisson")
+lasso<-glmnet(x,y, family="poisson", lambda=cv$lambda.1se)
+coef(lasso)
+
+
+#10-fold CV 
+set.seed(1234)
+k=5 #choose number of folds
+possum2<-possum%>%select(totlngth, site, taill, chest, belly)
+data2<-possum2[sample(nrow(possum2)),] #randomly order rows
+folds<-cut(seq(1:nrow(possum2)),breaks=k,labels=F) #create folds
+diags<-NULL
+for(i in 1:k){
+train<-data2[folds!=i,]
+test<-data2[folds==i,]
+fit<-lm(totlngth~., data=train)
+yhat<-predict(fit,newdata=test)
+diags<-mean((test$totlngth-yhat)^2)
+}
+mean(diags)
+```
+After running the LASSO regression, the variables with a non-zero value were sites 1, 2, 5, and 6, plus tail, chest, and belly. After running the 10-fold CV, the residual standard error is 9.73, which means the fit is alright. 
+

@@ -1,0 +1,29 @@
+---
+title: Python & Greg Fenves
+author: Cynthia Kulak
+date: '2020-05-15'
+slug: python-101
+categories: []
+tags: []
+description: ''
+---
+
+```{R}
+library(reticulate)
+```
+
+```{python}
+pres_dict = {
+ 'firstName': 'Greg',
+ 'lastName': 'Fenves',
+ 'hobbies': ['traveling','reading Murakami','art'],
+ 'occupation': ['engineer', 'college president'],
+ 'age': 62
+}
+print(pres_dict)
+print(pres_dict.keys())
+print(pres_dict.values()) #values can be anything, not just numbers
+pres_dict['hobbies'].append('UT sports') #add a hobby
+print(pres_dict)
+```
+![](/post/2020-05-15-python-101_files/daddy fenves.jpg)

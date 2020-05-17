@@ -1,0 +1,31 @@
+---
+title: Python & Greg Fenves
+author: Cynthia Kulak
+date: '2020-05-15'
+slug: python-101
+categories: []
+tags: []
+description: ''
+---
+
+
+
+<pre class="r"><code>library(reticulate)</code></pre>
+<pre><code>## Warning: package &#39;reticulate&#39; was built under R version 3.6.3</code></pre>
+<pre class="python"><code>pres_dict = {
+ &#39;firstName&#39;: &#39;Greg&#39;,
+ &#39;lastName&#39;: &#39;Fenves&#39;,
+ &#39;hobbies&#39;: [&#39;traveling&#39;,&#39;reading Murakami&#39;,&#39;art&#39;],
+ &#39;occupation&#39;: [&#39;engineer&#39;, &#39;college president&#39;],
+ &#39;age&#39;: 62
+}
+print(pres_dict)</code></pre>
+<pre><code>## {&#39;firstName&#39;: &#39;Greg&#39;, &#39;lastName&#39;: &#39;Fenves&#39;, &#39;hobbies&#39;: [&#39;traveling&#39;, &#39;reading Murakami&#39;, &#39;art&#39;], &#39;occupation&#39;: [&#39;engineer&#39;, &#39;college president&#39;], &#39;age&#39;: 62}</code></pre>
+<pre class="python"><code>print(pres_dict.keys())</code></pre>
+<pre><code>## dict_keys([&#39;firstName&#39;, &#39;lastName&#39;, &#39;hobbies&#39;, &#39;occupation&#39;, &#39;age&#39;])</code></pre>
+<pre class="python"><code>print(pres_dict.values()) #values can be anything, not just numbers</code></pre>
+<pre><code>## dict_values([&#39;Greg&#39;, &#39;Fenves&#39;, [&#39;traveling&#39;, &#39;reading Murakami&#39;, &#39;art&#39;], [&#39;engineer&#39;, &#39;college president&#39;], 62])</code></pre>
+<pre class="python"><code>pres_dict[&#39;hobbies&#39;].append(&#39;UT sports&#39;) #add a hobby
+print(pres_dict)</code></pre>
+<pre><code>## {&#39;firstName&#39;: &#39;Greg&#39;, &#39;lastName&#39;: &#39;Fenves&#39;, &#39;hobbies&#39;: [&#39;traveling&#39;, &#39;reading Murakami&#39;, &#39;art&#39;, &#39;UT sports&#39;], &#39;occupation&#39;: [&#39;engineer&#39;, &#39;college president&#39;], &#39;age&#39;: 62}</code></pre>
+<p><img src="/post/2020-05-15-python-101_files/daddy%20fenves.jpg" /></p>
